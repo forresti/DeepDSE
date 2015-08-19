@@ -1,0 +1,54 @@
+name: "NiN"
+#input: "data"
+#input_dim: 10
+#input_dim: 3
+#input_dim: 227
+#input_dim: 227
+
+#TODO: script to prepend 'deploy data' or 'train+val data'
+#TODO: does std:0.01 vs std:0.05 make any difference for convergence or accuracy?
+
+#these data layers are for trainval only:
+layer {
+  name: "data", type: "Data", top: "data", top: "label"
+  include {phase: TRAIN}
+  transform_param {mirror: true, crop_size: 227, mean_value: 104, mean_value: 117, mean_value: 123}
+  data_param {source: "/scratch/forresti/ilsvrc2012/ilsvrc2012_train_256x256_lmdb", 
+              batch_size: 256, backend: LMDB}
+}
+layer {
+  name: "data", type: "Data", top: "data", top: "label"
+  include {phase: TEST}
+  transform_param {mirror: false, crop_size: 227, mean_value: 104, mean_value: 117, mean_value: 123}
+  data_param {source: "/scratch/forresti/ilsvrc2012/ilsvrc2012_val_256x256_lmdb", 
+              batch_size: 64, backend: LMDB}
+}
+
+layer {
+  name: "conv_template", type: "Convolution", bottom: "data", top: "conv1"
+  param {lr_mult: 1, decay_mult: 1}
+  param {lr_mult: 2, decay_mult: 0}
+  convolution_param {
+    num_output: 96, kernel_size: 11, stride: 4
+    weight_filler {type: "gaussian", std: 0.01, mean:0}
+    #weight_filler {type: "xavier"}
+    bias_filler {type: "constant", value: 0}
+  }
+}
+layer { name: "relu_template", type: "ReLU", bottom: "conv1", top: "conv1" }
+
+layer {
+  name: "pool_template", type: "Pooling", bottom: "cccp2", top: "pool0"
+  pooling_param {pool: MAX, kernel_size: 3, stride: 2}
+}
+
+layer {
+  name: "dropout_template", type: "Dropout", bottom: "fc6", top: "fc6"
+  dropout_param {dropout_ratio: 0.5}
+}
+
+#for the following, you extend bottom[] to include the activations to operate on
+# (for trainval, you need bottom = [input, label] ... in that order)
+layer {name: "accuracy_trainval", type: "Accuracy", top: "accuracy", include {phase: TEST}}
+layer {name: "softmax_trainval", type: "SoftmaxWithLoss", include {phase: TRAIN}}
+layer {name: "softmax_deploy", type: "Softmax", top: "prob"}
