@@ -1,0 +1,7 @@
+
+1. test "call a subprocess, and update a DB when subprocess returns"
+(start with `sleep 10`)
+
+2. put correct caffe calls in subprocess.call commands
+
+
