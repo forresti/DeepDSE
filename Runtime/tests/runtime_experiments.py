@@ -2,32 +2,30 @@ import threading
 import subprocess
 
 
-def onExit():
-    print "finished subprocesses. TODO: update training database"
+def onExit(idx):
+    print "finished subprocess %d. TODO: update training database" %idx
 
 #thanks: http://stackoverflow.com/questions/2581817/python-subprocess-callback-when-cmd-exits
-def popenAndCall(onExit, popenArgs):
+def popenAndCall(onExit, jobDict):
     """
-    Runs the given args in a subprocess.Popen, and then calls the function
+    Runs the given args in a subprocess.call, and then calls the function
     onExit when the subprocess completes.
-    onExit is a callable object, and popenArgs is a list/tuple of args that 
-    would give to subprocess.Popen.
     """
-    def runInThread(onExit, popenArgs):
-        #proc = subprocess.Popen(*popenArgs, shell=False)
-        #proc.wait()
-        subprocess.call(popenArgs, shell=True) #TODO: make sure popenArgs is just a string.
-        onExit()
+    def runInThread(onExit, jobDict):
+        #TODO: make sure popenArgs is just a string.
+        subprocess.call(jobDict['cmd'], shell=True) #this is supposed wait for subprocess to complete.
+        onExit(jobDict['idx'])
         return
-    thread = threading.Thread(target=runInThread, args=(onExit, popenArgs))
+
+    thread = threading.Thread(target=runInThread, args=(onExit, jobDict))
     thread.start()
     # returns immediately after the thread starts
     return thread
 
 
 if __name__ == "__main__":
-    #subprocess.Popen("sleep 10", shell=True) #this works. (doesn't have callback, of course.)
-
-    popenAndCall(onExit, "sleep 10") #error: bufsize must be an integer
+    for i in xrange(0,3):
+        jobDict = {'cmd': 'sleep 10', 'idx':i}
+        popenAndCall(onExit, jobDict)
 
 

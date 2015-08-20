@@ -1,7 +1,12 @@
 
-1. test "call a subprocess, and update a DB when subprocess returns"
-(start with `sleep 10`)
+[done] 1. test "call a subprocess, and update a DB when subprocess returns"
+  (start with `sleep 10`)
 
 2. put correct caffe calls in subprocess.call commands
+
+3. set up "caffe trains for 5k iter... if above a threshold, then continue."
+  -> do this w/ multiple solver.prototxts?
+  -> or, do this by adding a stopping condition in Caffe C++ code?
+
 
 
