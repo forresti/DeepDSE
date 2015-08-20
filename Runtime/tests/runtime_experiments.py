@@ -1,3 +1,4 @@
+from IPython import embed
 import threading
 import subprocess
 
@@ -24,8 +25,10 @@ def popenAndCall(onExit, jobDict):
 
 
 if __name__ == "__main__":
-    for i in xrange(0,3):
-        jobDict = {'cmd': 'sleep 10', 'idx':i}
-        popenAndCall(onExit, jobDict)
-
-
+    #for i in xrange(0,3):
+    for i in xrange(0,1):
+        #cmd = 'sleep 10'
+        cmd = '~/__caffe_allreduce/build/tools/caffe'
+        jobDict = {'cmd': cmd, 'idx':i}
+        t = popenAndCall(onExit, jobDict)
+        #TODO: look at what 't' can do
