@@ -1,10 +1,26 @@
 from IPython import embed
 import threading
+from threading import Lock
 import subprocess
+import shelve
 
+#mutexes for 'shelve' thread safety": georg.io/2014/06/Python-Shelve-Thread-Safety
+
+db_path = 'experiment_db.shelve' #'shelve' db file location
+mutex = Lock()
 
 def onExit(idx):
     print "finished subprocess %d. TODO: update training database" %idx
+
+    mutex.acquire()
+    db = shelve.open(experiment_shelve)
+
+    # write to db
+    db[str(idx)] = 'hello'
+
+    db.close()
+    mutex.release()
+
 
 #thanks: http://stackoverflow.com/questions/2581817/python-subprocess-callback-when-cmd-exits
 def popenAndCall(onExit, jobDict):
@@ -25,10 +41,12 @@ def popenAndCall(onExit, jobDict):
 
 
 if __name__ == "__main__":
-    #for i in xrange(0,3):
-    for i in xrange(0,1):
-        #cmd = 'sleep 10'
-        cmd = '~/__caffe_allreduce/build/tools/caffe'
+    #n_concurrent = 1
+    n_concurrent = 5
+
+    for i in xrange(0, n_concurrent):
+        cmd = 'sleep 2'
+        #cmd = '~/__caffe_allreduce/build/tools/caffe'
         jobDict = {'cmd': cmd, 'idx':i}
         t = popenAndCall(onExit, jobDict)
         #TODO: look at what 't' can do
