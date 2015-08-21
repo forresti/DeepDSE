@@ -80,7 +80,7 @@ def get_current_accuracy(log_filename):
     #test_results is already sorted, since we read the log file in order
     return test_results[-1]
     
-
+'''
 def quick_test():
     forward_time = get_forward_time(1)
     print forward_time    
@@ -90,6 +90,7 @@ def quick_test():
 
     #accuracy_dict = get_current_accuracy('./nets/0/train_Sun_2014_12_21__16_01_39.log')
     accuracy_dict = get_current_accuracy('./nets/306/train_Sat_2014_12_27__13_06_55.log')
+'''
 
 '''
 def run_analytics():

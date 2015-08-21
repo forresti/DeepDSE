@@ -39,6 +39,8 @@ def refreshDB(db_path, net_dir):
             net['status'] = 'paused'
             log_fname = get_latest_log(net_dir + '/' + k) #TODO: use path.join
             accuracy_dict = get_current_accuracy(net_dir + '/' + log_fname)
+            net['accuracy'] = accuracy_dict['accuracy']
+            net['iter'] = accuracy_dict['iter']
             db[k] = net #TODO: figure out of I actually need to do this (is 'net' a deepcopy or not?) 
 
 '''
