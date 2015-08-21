@@ -91,6 +91,7 @@ def quick_test():
     #accuracy_dict = get_current_accuracy('./nets/0/train_Sun_2014_12_21__16_01_39.log')
     accuracy_dict = get_current_accuracy('./nets/306/train_Sat_2014_12_27__13_06_55.log')
 
+'''
 def run_analytics():
     if update_trainlist:
         tl = open('train_list_.txt', 'w')
@@ -130,11 +131,6 @@ def run_analytics():
             continue
 
     #throw some fresh nets into the hopper (total of 313 nets)
-    #for i in xrange(275, 275+88):
-    '''
-    for i in xrange(275, 275+150):
-        tl.write('./nets/' + str(i) + '\n')
-    '''
 
     if update_trainlist:
         tl.close()
@@ -181,10 +177,12 @@ def pareto_optimal(trainResults):
         print 'best net under %d ms per 10 batches, seed=%d, forward_time=%f, iter=%d, accuracy=%f' %(maxtime, bestFound['seed'], bestFound['forward_time'], bestFound['iter'], bestFound['accuracy'])
 
     return optimalDict
+'''
 
+'''
 if __name__ == "__main__":
     #quick_test()
     trainResults = run_analytics()
     #optimalDict = pareto_optimal(trainResults)
     #fast_trainlist()
-
+'''
