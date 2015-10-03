@@ -5,9 +5,13 @@
 #db_path = 'experiment_db.shelve'
 
 #where are the nets to train?
-net_dir = 'tests/fake_nets'
+#net_dir = 'tests/fake_nets'
+net_dir = '/lustre/atlas/scratch/forresti/csc103/dnn_exploration/nets_batchsize_sweep'
 
 #titan user ID (for tracking the PBS scheduling)
 uname = 'forresti'
 #uname = 'worley'
+
+caffe_root = '/ccs/home/forresti/FireCaffe'
+caffe_bin_computenode = '/lustre/atlas/scratch/forresti/csc103/dnn_exploration/bin'
 
