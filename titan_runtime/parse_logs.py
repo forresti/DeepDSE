@@ -6,7 +6,8 @@ def isStarted(logdir):
     logF = get_latest_log(logdir)
     if logF is None:
         return False
-    else return True
+    else:
+        return True
 
 #TODO: code de-duplication across isDone() and isCrashed()
 def isDone(logdir):
