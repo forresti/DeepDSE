@@ -3,6 +3,7 @@ import parse_logs
 import os
 import subprocess
 from IPython import embed
+import time
 import xml.etree.ElementTree as ET 
 from pbs_template import pbs_template
 
@@ -43,6 +44,17 @@ def parse_job_status(job_dir):
     else:
         return 'paused'
 
+#@return relative path to new PBS script
+def pbs_template_wrapper(n_jobs, eligible_jobs):
+    time_str = time.strftime("%a_%Y_%m_%d__%H_%M_%S")
+    pbs_F = 'pbs_scripts/%s.pbs' %time_str
+    pbs_str = pbs_template(n_jobs, eligible_jobs) #THE CRUX
+    f = open(pbs_F, 'w')
+    f.write(pbs_str)
+    f.close()
+    return pbs_F
+
+
 # a "job" is a Caffe training run.
 def schedulerLoop():
 
@@ -52,7 +64,8 @@ def schedulerLoop():
 
         #step 1: check for queued/running allocations (and wait for them to finish)
         isReady = is_pbs_ready()
-        print "isReady: ", isReady       
+        print "isReady: ", isReady 
+        #   TODO: loop over isReady, with a 1-5min timeout.
  
         #step 2: list of jobs
         jobs = sorted(os.listdir(conf.net_dir))
@@ -71,14 +84,15 @@ def schedulerLoop():
             else:
                 print "unknown job status:", status
 
-        #TODO: prune down to maxjobs
-        n_jobs = len(eligible_jobs) 
+        #  prune down to max_jobs
+        n_jobs = min( len(eligible_jobs), conf.max_jobs )
+        eligible_jobs = eligible_jobs[0:n_jobs]
 
         #step 4: create PBS script of eligible jobs
-        pbs_str = pbs_template(n_jobs, eligible_jobs)
-        print pbs_str
+        pbs_F = pbs_template_wrapper(n_jobs, eligible_jobs)
+        print pbs_F
 
-        #step 5: launch job
+        #step 5: launch allocation
 
         #step 6: remove old model snapshots (only keep newest snapshot)
 

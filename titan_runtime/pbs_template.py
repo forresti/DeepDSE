@@ -22,8 +22,9 @@ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MEMBERWORK/csc103/dnn_exploration/forrest_usr_
         st += '\n\ncd %s' %j
         st += '\naprun -n 1 -d 16 $CAFFE_ROOT/build/tools/caffe $CAFFE_BIN_COMPUTENODE/caffe train -solver=solver.prototxt -gpu=0 > train_$now.log 2>&1 &'
         st += '\ncd ..'
-    print st
+    return st
 
 if __name__ == "__main__":
-    pbs_template(2, ['run1', 'run2'])
- 
+    st = pbs_template(2, ['run1', 'run2'])
+    print st
+
