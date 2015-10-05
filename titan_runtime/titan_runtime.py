@@ -5,6 +5,7 @@ import subprocess
 from IPython import embed
 import time
 import xml.etree.ElementTree as ET 
+from parse_logs import get_latest_snapshot
 from pbs_template import pbs_template
 
 #check whether I already have a PBS allocation queued or running
@@ -44,6 +45,34 @@ def parse_job_status(job_dir):
     else:
         return 'paused'
 
+#@return list of eligible jobs (each entry is the relative path of a training run)
+def get_eligible_jobs():
+        #list of jobs
+        jobs = sorted(os.listdir(conf.net_dir))
+
+        #collect eligible jobs by parsing job status
+        eligible_jobs = []    
+        for j in jobs: #list of job subdirectory names
+            status = parse_job_status(j)
+            #print status
+            if (status == 'not_started') or (status == 'paused'):
+                eligible_jobs.append(j)
+
+            elif (status == 'done') or (status == 'crashed'):
+                continue
+
+            else:
+                print "unknown job status:", status
+
+        return eligible_jobs
+
+def get_snapshots(eligible_jobs):
+    eligible_job_dicts = []
+    for j in eligible_jobs:
+        snapshot = get_latest_snapshot(conf.net_dir + '/' + j)
+        eligible_job_dicts.append({'path':j, 'snapshot':snapshot})
+    return eligible_job_dicts
+
 #@return relative path to new PBS script
 def pbs_template_wrapper(n_jobs, eligible_jobs):
     time_str = time.strftime("%a_%Y_%m_%d__%H_%M_%S")
@@ -66,27 +95,16 @@ def schedulerLoop():
         isReady = is_pbs_ready()
         print "isReady: ", isReady 
         #   TODO: loop over isReady, with a 1-5min timeout.
- 
-        #step 2: list of jobs
-        jobs = sorted(os.listdir(conf.net_dir))
 
-        #step 3: collect eligible jobs by parsing job status
-        eligible_jobs = []    
-        for j in jobs: #list of job subdirectory names
-            status = parse_job_status(j)
-            #print status
-            if (status == 'not_started') or (status == 'paused'):
-                eligible_jobs.append(j)
-
-            elif (status == 'done') or (status == 'crashed'):
-                continue
-
-            else:
-                print "unknown job status:", status
+        #step 2: collect eligible jobs by parsing job status
+        eligible_jobs = get_eligible_jobs()
 
         #  prune down to max_jobs
         n_jobs = min( len(eligible_jobs), conf.max_jobs )
-        eligible_jobs = eligible_jobs[0:n_jobs]
+        eligible_jobs = eligible_jobs[0:n_jobs] #eligible_jobs is a list of strings
+        eligible_jobs = get_snapshots(eligible_jobs) #now, eligible_jobs is a list of {path, snapshot} dicts.
+
+        # TODO: get snapshots for eligible jobs
 
         #step 4: create PBS script of eligible jobs
         pbs_F = pbs_template_wrapper(n_jobs, eligible_jobs)

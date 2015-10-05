@@ -32,8 +32,27 @@ def isPaused(logDir):
     #there is no defining characteristic of "Titan scheduler killed the job,"
     # other than "the log file ends abruptly without any error messages."
 ''' 
+#@param netDir = absolute path to place where solverstate files are located
+def get_latest_snapshot(netDir):
+    files = os.listdir(netDir)
+    files = [f for f in files if f.endswith('.solverstate')]
+    if len(files) == 0:
+        return None
 
-   
+    max_iter = 0
+    max_iter_file = None
+
+    for f in files:
+        f_iter = f.split('.solverstate')[0] #trim extension
+        f_iter = f_iter.split('_')[-1] #googlenet_iter_160000 -> 160000
+        f_iter = int(f_iter)
+
+        if f_iter > max_iter:
+            max_iter = f_iter
+            max_iter_file = f
+
+    return max_iter_file
+    
 #@param netID = random seed for this net (e.g. 3 -> ./nets/3)
 def get_forward_time(netDir):
     #dir = './nets/%d' %netID
