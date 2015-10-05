@@ -3,12 +3,14 @@ import conf_rt as conf
 #@param job_dicts = [{'path':..., 'snapshot':...}, ...]
 # where path is relative to conf.net_dir
 def pbs_template(n_jobs, job_dicts):
+    n_gpus = sum( [j['n_gpu'] for j in job_dicts] )
+
     st = """#!/bin/bash
 #PBS -A csc103
 #PBS -l walltime=2:00:00
 #PBS -q batch
 #PBS -l gres=atlas1%atlas2"""
-    st += "\n#PBS -l nodes=%d" %n_jobs
+    st += "\n#PBS -l nodes=%d" %n_gpus #%n_jobs
     st += '\nCAFFE_ROOT=%s' %conf.caffe_root
 
     st += '\n\nCAFFE_BIN_COMPUTENODE=%s' %conf.caffe_bin_computenode
@@ -31,7 +33,7 @@ def pbs_template(n_jobs, job_dicts):
             snapshot_str = '-snapshot=%s' %j['snapshot']
 
         st += '\n\ncd %s' %j['path']
-        st += '\naprun -n 1 -d 16 $CAFFE_BIN_COMPUTENODE/caffe train -solver=solver.prototxt %s -gpu=0 > train_$now.log 2>&1 &' %snapshot_str
+        st += '\naprun -n %d -d 16 $CAFFE_BIN_COMPUTENODE/caffe train -solver=solver.prototxt %s -gpu=0 > train_$now.log 2>&1 &' %(j['n_gpu'], snapshot_str)
         st += '\ncd ..'
 
     st += '\nsleep 2h #otherwise, this script returns immediately'

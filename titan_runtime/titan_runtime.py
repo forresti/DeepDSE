@@ -66,12 +66,24 @@ def get_eligible_jobs():
 
         return eligible_jobs
 
+#@param eligible_jobs = list of job relative paths
+#@return eligible_job_dicts = [{path, snapshot}, ...]
 def get_snapshots(eligible_jobs):
     eligible_job_dicts = []
     for j in eligible_jobs:
         snapshot = get_latest_snapshot(conf.net_dir + '/' + j)
         eligible_job_dicts.append({'path':j, 'snapshot':snapshot})
     return eligible_job_dicts
+
+#@param eligible_jobs = [{'path'...}, {'path'...}, ...]
+#add n_gpu to each job dict
+def get_n_gpu(eligible_jobs):
+    for i in xrange( 0, len(eligible_jobs) ):
+        n_gpu_f = conf.net_dir + '/' + eligible_jobs[i]['path'] + '/n_gpu.txt'
+        with open(n_gpu_f,'r') as f:
+            n_gpu = int(f.read())
+        eligible_jobs[i]['n_gpu']=n_gpu
+    return eligible_jobs 
 
 #@return relative path to new PBS script
 def pbs_template_wrapper(n_jobs, eligible_jobs):
@@ -82,7 +94,6 @@ def pbs_template_wrapper(n_jobs, eligible_jobs):
     f.write(pbs_str)
     f.close()
     return pbs_F
-
 
 # a "job" is a Caffe training run.
 def schedulerLoop():
@@ -99,20 +110,24 @@ def schedulerLoop():
         #step 2: collect eligible jobs by parsing job status
         eligible_jobs = get_eligible_jobs()
 
+        if len(eligible_jobs) == 0:
+            unfinishedJobs = False
+            break
+
         #  prune down to max_jobs
         n_jobs = min( len(eligible_jobs), conf.max_jobs )
         eligible_jobs = eligible_jobs[0:n_jobs] #eligible_jobs is a list of strings
         eligible_jobs = get_snapshots(eligible_jobs) #now, eligible_jobs is a list of {path, snapshot} dicts.
+        eligible_jobs = get_n_gpu(eligible_jobs)
 
-        # TODO: get snapshots for eligible jobs
-
-        #step 4: create PBS script of eligible jobs
+        #step 3: create PBS script of eligible jobs
         pbs_F = pbs_template_wrapper(n_jobs, eligible_jobs)
         print pbs_F
 
-        #step 5: launch allocation
-
-        #step 6: remove old model snapshots (only keep newest snapshot)
+        #step 4: launch allocation
+        #pbs_out = subprocess.call('qsub %s' %pbs_F)
+        
+        #step 5: remove old model snapshots (only keep newest snapshot)
 
         unfinishedJobs = False #for debugging (TODO: remove)
 
