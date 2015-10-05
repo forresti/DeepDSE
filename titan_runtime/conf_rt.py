@@ -14,5 +14,6 @@ uname = 'forresti'
 
 caffe_root = '/ccs/home/forresti/FireCaffe'
 caffe_bin_computenode = '/lustre/atlas/scratch/forresti/csc103/dnn_exploration/bin'
+caffe_lib_computenode = '/lustre/atlas/scratch/forresti/csc103/dnn_exploration/lib'
 max_jobs = 100
 

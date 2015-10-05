@@ -9,13 +9,16 @@ def pbs_template(n_jobs, job_dicts):
 #PBS -q batch
 #PBS -l gres=atlas1%atlas2"""
     st += "\n#PBS -l nodes=%d" %n_jobs
-
-    st += """\n\n#compute nodes do NOT look at ~/.bashrc
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MEMBERWORK/csc103/dnn_exploration/forrest_usr_local/lib"""
     st += '\nCAFFE_ROOT=%s' %conf.caffe_root
-    st += '\nCAFFE_BIN_COMPUTENODE=%s' %conf.caffe_bin_computenode
+
+    st += '\n\nCAFFE_BIN_COMPUTENODE=%s' %conf.caffe_bin_computenode
     st += '\ncp $CAFFE_ROOT/build/tools/caffe $CAFFE_BIN_COMPUTENODE'
-    st += '\nNETDIR=%s' %conf.net_dir
+
+    st += '\n\nCAFFE_LIB_COMPUTENODE=%s' %conf.caffe_lib_computenode
+    st += '\ncp $CAFFE_ROOT/build/lib/libcaffe.so $CAFFE_LIB_COMPUTENODE'
+    st += '\nLD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MEMBERWORK/csc103/dnn_exploration/forrest_usr_local/lib:$CAFFE_LIB_COMPUTENODE'
+
+    st += '\n\nNETDIR=%s' %conf.net_dir
     st += '\ncd $NETDIR'
     st += '\nnow=`date +%a_%Y_%m_%d__%H_%M_%S`'
 
@@ -30,6 +33,8 @@ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MEMBERWORK/csc103/dnn_exploration/forrest_usr_
         st += '\n\ncd %s' %j['path']
         st += '\naprun -n 1 -d 16 $CAFFE_BIN_COMPUTENODE/caffe train -solver=solver.prototxt %s -gpu=0 > train_$now.log 2>&1 &' %snapshot_str
         st += '\ncd ..'
+
+    st += '\nsleep 2h #otherwise, this script returns immediately'
     return st
 
 if __name__ == "__main__":
