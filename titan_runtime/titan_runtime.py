@@ -55,7 +55,7 @@ def get_eligible_jobs():
         for j in jobs: #list of job subdirectory names
             status = parse_job_status(j)
             #print status
-            if (status == 'not_started') or (status == 'paused'):
+            if (status == 'not_started') or (status == 'paused'): # or (status == 'crashed'):
                 eligible_jobs.append(j)
 
             elif (status == 'done') or (status == 'crashed'):
