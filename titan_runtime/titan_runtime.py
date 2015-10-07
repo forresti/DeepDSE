@@ -1,3 +1,4 @@
+import time 
 import conf_rt as conf
 import parse_logs
 import os
@@ -106,6 +107,9 @@ def schedulerLoop():
         isReady = is_pbs_ready()
         print "isReady: ", isReady 
         #   TODO: loop over isReady, with a 1-5min timeout.
+        if not isReady:
+            time.sleep(60) #1 minute
+            continue
 
         #step 2: collect eligible jobs by parsing job status
         eligible_jobs = get_eligible_jobs()
@@ -125,11 +129,11 @@ def schedulerLoop():
         print pbs_F
 
         #step 4: launch allocation
-        #pbs_out = subprocess.call('qsub %s' %pbs_F)
+        pbs_out = subprocess.call('qsub %s' %pbs_F, shell=True)
         
         #step 5: remove old model snapshots (only keep newest snapshot)
 
-        unfinishedJobs = False #for debugging (TODO: remove)
+        #unfinishedJobs = False #for debugging (TODO: remove)
 
 if __name__ == "__main__":
     schedulerLoop()
