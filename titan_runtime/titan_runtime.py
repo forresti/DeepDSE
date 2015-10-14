@@ -88,7 +88,7 @@ def get_n_gpu(eligible_jobs):
 
 #@return relative path to new PBS script
 def pbs_template_wrapper(n_jobs, eligible_jobs):
-    time_str = time.strftime("%a_%Y_%m_%d__%H_%M_%S")
+    time_str = time.strftime("%Y_%m_%d__%H_%M_%S_%a")
     pbs_F = 'pbs_scripts/%s.pbs' %time_str
     pbs_str = pbs_template(n_jobs, eligible_jobs) #THE CRUX
     f = open(pbs_F, 'w')

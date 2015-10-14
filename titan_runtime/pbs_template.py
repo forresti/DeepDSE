@@ -12,6 +12,8 @@ def pbs_template(n_jobs, job_dicts):
     st = """#!/bin/bash
 #PBS -A csc103
 #PBS -q batch
+#PBS -e ~/error.txt
+#PBS -o ~/output.txt
 #PBS -l gres=atlas1%atlas2"""
     st += '\n#PBS -l walltime=%d:00:00'%walltime
     st += "\n#PBS -l nodes=%d" %n_gpus #%n_jobs
