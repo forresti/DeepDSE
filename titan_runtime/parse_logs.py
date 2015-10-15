@@ -130,4 +130,35 @@ def get_current_accuracy(log_filename):
     #print '      test_results: ', test_results
     #test_results is already sorted, since we read the log file in order
     return test_results[-1]
-    
+   
+def get_current_accuracy_googlenet(log_filename):
+    '''
+    I1015 14:09:41.126691 18569 solver.cpp:275] Iteration 50000, Testing net (#0)
+    I1015 14:09:55.964213 18569 solver.cpp:339]     Test net output #7: loss3/top-1 = 0.597995
+    I1015 14:09:55.964251 18569 solver.cpp:339]     Test net output #8: loss3/top-5 = 0.830497
+    '''
+    f = open(log_filename)
+    test_results = [] #results for every time we test the net
+
+    line = f.readline()
+    while line:
+        if "Testing net" in line:
+            iter_str = line #...solver.cpp:247] Iteration 34000, Testing net (#0)
+
+            iter = iter_str.split("Iteration ")[1].split(',')[0]
+            iter = int(iter)
+
+            accuracy = -1.0 #if you see this, then the job was killed while Testing net
+            accuracy_str = f.readline()
+            while "loss3/top-1" not in accuracy_str:
+                accuracy_str = f.readline()
+            #split... ...loss3/top-1 = 0.597995
+            accuracy = accuracy_str.split('= ')[1]
+            accuracy = float(accuracy)
+            test_results.append({'accuracy':accuracy, 'iter':iter})
+
+        if "error" in line:
+            return "error"
+
+        line = f.readline()
+    return test_results[-1] 
