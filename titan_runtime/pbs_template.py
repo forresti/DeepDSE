@@ -29,6 +29,7 @@ def pbs_template(n_jobs, job_dicts):
     st += '\n\nNETDIR=%s' %conf.net_dir
     st += '\ncd $NETDIR'
     st += '\nnow=`date +%a_%Y_%m_%d__%H_%M_%S`'
+    st += '\nexport MPICH_ALLREDUCE_NO_SMP=1'
 
     n_jobs = min(n_jobs, len(job_dicts)) # making sure we're not going beyond our allocation
     for j in job_dicts:
