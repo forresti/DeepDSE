@@ -16,6 +16,6 @@ if __name__ == "__main__":
     accuracy_dict = get_current_accuracy(logF)
     if accuracy_dict is not 'error':
       if 'accuracy_top5' in accuracy_dict.keys():
-        print '  net: %s, top1: %f, top5: %f, at iter %d' %(logdir, accuracy_dict['accuracy'], accuracy_dict['accuracy_top5'], accuracy_dict['iter'])
+        print '  net: %s, top1: %0.1f, top5: %0.1f, at iter %d' %(logdir, accuracy_dict['accuracy']*100, accuracy_dict['accuracy_top5']*100, accuracy_dict['iter'])
       else:
-        print '  net: %s, top1: %f, at iter %d' %(logdir, accuracy_dict['accuracy'], accuracy_dict['iter'])
+        print '  net: %s, top1: %0.1f, at iter %d' %(logdir, accuracy_dict['accuracy']*100, accuracy_dict['iter'])

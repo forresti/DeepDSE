@@ -11,5 +11,5 @@ if __name__ == "__main__":
   for logdir in jobs:
     logF = get_latest_log(conf.net_dir + '/' + logdir)
     accuracy_dict = get_current_accuracy_googlenet(logF)
-    print '  net: %s, accuracy: %f, at iter %d' %(logdir, accuracy_dict['accuracy'], accuracy_dict['iter'])
+    print '  net: %s, accuracy: %0.1f, at iter %d' %(logdir, accuracy_dict['accuracy']*100, accuracy_dict['iter'])
 
