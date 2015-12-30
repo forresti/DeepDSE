@@ -116,16 +116,34 @@ def get_current_accuracy(log_filename):
 
             iter = iter_str.split("Iteration ")[1].split(',')[0]
             iter = int(iter)
-           
+          
+            ''' 
             if("Test net output #0: " in accuracy_str): #is occasionally missing, e.g. if job dies while writing output to disk 
                 accuracy = accuracy_str.split("Test net output #0: ")[1].split('= ')[1]
                 accuracy = float(accuracy)
                 test_results.append({'accuracy':accuracy, 'iter':iter})
+            '''
+            #top-1
+            if "accuracy = " in accuracy_str:
+                accuracy = accuracy_str.split('= ')[1]
+                accuracy = float(accuracy)
+                test_results.append({'accuracy':accuracy, 'iter':iter})
+
+            #top-5 (if available)
+            try:
+                accuracy_top5_str = f.readline()
+                if "accuracy_top5 = " in accuracy_top5_str:
+                    accuracy_top5 = accuracy_top5_str.split('= ')[1]
+                    accuracy_top5 = float(accuracy_top5)
+                    test_results[-1]['accuracy_top5'] = accuracy_top5
+            except:
+                pass
 
         if "error" in line:
             return "error"
 
         line = f.readline()
+
 
     #print '      test_results: ', test_results
     #test_results is already sorted, since we read the log file in order
