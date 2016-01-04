@@ -40,12 +40,14 @@ def pbs_template(n_jobs, job_dicts):
     n_jobs = min(n_jobs, len(job_dicts)) # making sure we're not going beyond our allocation
     for j in job_dicts:
 
+        st += '\n\ncd %s' %j['path']
         if j['snapshot'] is None:
             snapshot_str = ''
         else:
             snapshot_str = '-snapshot=%s' %j['snapshot']
+            #st += '\nnewestDump=`ls -t *solverstate | head -1` #thx: stackoverflow.com/questions/5885934'
+            #snapshot_str = '-snapshot=$newestDump'
 
-        st += '\n\ncd %s' %j['path']
         st += '\naprun -n %d -d 16 $CAFFE_BIN_COMPUTENODE/caffe train -solver=solver.prototxt %s -gpu=0 > train_$now.log 2>&1 &' %(j['n_gpu'], snapshot_str)
         st += '\ncd ..'
 
