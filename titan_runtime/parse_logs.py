@@ -1,6 +1,9 @@
 from pprint import pprint
 import os
 import time
+import datetime
+import re
+from IPython import embed
 
 def isStarted(logdir):
     logF = get_latest_log(logdir)
@@ -180,3 +183,62 @@ def get_current_accuracy_googlenet(log_filename):
 
         line = f.readline()
     return test_results[-1] 
+
+#@param [{elapsed_time_sec, elapsed_iter}, ...]
+def time_per_iter_stats(time_per_iter_dicts):
+    time_per_iter_list = [d['elapsed_time_sec'] / d['elapsed_iter'] for d in time_per_iter_dicts]
+    out = dict()
+    out['min'] = min(time_per_iter_list)
+    out['max'] = max(time_per_iter_list)
+    out['mean'] = sum(time_per_iter_list) / float(len(time_per_iter_list))
+    return out 
+
+#@param log_filename = e.g. path/to/train_Mon_2015_12_14__16_07_30.log
+#@return {min, max, mean} time (in seconds) per iter of training
+def get_time_per_iter(log_filename):
+    '''
+    I1221 14:27:37.733464 24560 solver.cpp:558] Iteration 13120, lr = 0.0735673
+    I1221 14:28:02.202710 24560 solver.cpp:558] Iteration 13160, lr = 0.0735468
+    #Lmmdd hh:mm:ss.uuuuuu
+    '''
+    f = open(log_filename)
+    line = f.readline()
+
+    prev_timestamp = None
+    curr_timestamp = None
+
+    prev_iter = None
+    curr_iter = None
+
+    result_dicts = []
+
+    while line:
+        if 'lr =' in line:
+            #print line
+
+            # PARSE TIMESTAMP from google-logging message
+            prev_timestamp = curr_timestamp
+
+            time_re = r'\d{4} \d{2}:\d{2}:\d{2}.\d{6}'
+            time_format = '%m%d %H:%M:%S.%f'
+
+            time_to_parse = re.search(time_re, line).group() #whole line -> 1221 14:27:37.733464
+            curr_timestamp = datetime.datetime.strptime(time_to_parse, time_format)
+
+            # PARSE ITERATION 
+            prev_iter = curr_iter
+            curr_iter = int(re.search('Iteration \d+', line).group().split(' ')[1])
+
+            # ELAPSED QUANTITIES
+            if prev_timestamp is not None:
+                elapsed_time = curr_timestamp - prev_timestamp
+                elapsed_iter = curr_iter - prev_iter
+
+                #print elapsed_time.total_seconds()
+                result_dicts.append({'elapsed_time_sec':elapsed_time.total_seconds(), 'elapsed_iter':elapsed_iter})
+
+        line = f.readline()
+
+    stats = time_per_iter_stats(result_dicts)
+    return stats
+
