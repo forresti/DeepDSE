@@ -76,17 +76,22 @@ def get_forward_time(netDir):
 
 
 #get the filename of the latest training log, e.g. "train_Sun_2014_12_21__16_01_39.log"
-def get_latest_log(logdir):
+#@param for_timing is a hack to look for time_training*.log instead of just train*.log
+def get_latest_log(logdir, for_timing=False):
     #logdir = './nets/%d' %netID
     allfiles = os.listdir(logdir)
 
     files_with_time = []
 
+    searchstr = 'train_'
+    if for_timing:
+      searchstr =  'time_training_'
+
     for f in allfiles:
         #if not (f.startswith('train_') and f.endswith('.log')):
-        if not (f.startswith('train_') and '.log' in f):
+        if not (f.startswith(searchstr) and '.log' in f):
             continue
-        timeOnly = f[len('train_'):]
+        timeOnly = f[len(searchstr):]
         #timeOnly = timeOnly[:-len('.log')]
         timeOnly = timeOnly.split('.log')[0]
         timeOnly = time.strptime(timeOnly, '%a_%Y_%m_%d__%H_%M_%S')

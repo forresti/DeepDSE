@@ -12,8 +12,8 @@ if __name__ == "__main__":
 
   '''
 
-  log_fname = '/lustre/atlas/scratch/forresti/csc103/dnn_exploration/nets_nov2015_done/FireNet_8_fireLayers_base_64_64_64_incr_64_64_64_freq_2/train_Mon_2015_12_14__16_07_30.log'
-
+  #log_fname = '/lustre/atlas/scratch/forresti/csc103/dnn_exploration/nets_nov2015_done/FireNet_8_fireLayers_base_64_64_64_incr_64_64_64_freq_2/train_Mon_2015_12_14__16_07_30.log'
+  log_fname = '/lustre/atlas/scratch/forresti/csc103/dnn_exploration/nets_nov2015_done/FireNet_8_fireLayers_base_r_64_64_incr_r_64_64_CEratio_0.125_freq_2'
   time_stats = get_time_per_iter(log_fname)
   print time_stats
 
