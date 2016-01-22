@@ -7,7 +7,8 @@ if __name__ == "__main__":
 
   jobs = os.listdir(conf.net_dir)
   #jobs = [j for j in jobs if 'NiN' in j]
-  jobs = [j for j in jobs if not j.startswith('googlenet')]
+  #jobs = [j for j in jobs if not j.startswith('googlenet')]
+  jobs = [j for j in jobs if not 'googlenet' in j]
   jobs = sorted(jobs)
   for logdir in jobs:
     logF = get_latest_log(conf.net_dir + '/' + logdir)
