@@ -18,10 +18,11 @@ if __name__ == "__main__":
   #log_fnames.append('/lustre/atlas/scratch/forresti/csc103/dnn_exploration/nets_nov2015_done/microbenchmark_1gpu/FireNet_8_fireLayers_base_r_64_64_incr_r_64_64_CEratio_0.125_freq_2/train_Tue_2016_01_05__21_15_36.log')
 
   net_dir = '/lustre/atlas/scratch/forresti/csc103/dnn_exploration/nets_nov2015_done/'
-  for d in os.listdir(net_dir):
+
+  for d in sorted(os.listdir(net_dir)):
     #TODO: possibly replace the following with 'get_latest_log'
     train_dir = net_dir + '/' + d
-    for f in os.listdir(train_dir):
+    for f in sorted(os.listdir(train_dir)):
       if 'time_training' in f:
         log_fnames.append(train_dir + '/' + f)
   print log_fnames

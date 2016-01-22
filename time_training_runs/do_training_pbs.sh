@@ -4,8 +4,8 @@
 #PBS -e /dev/null
 #PBS -o /dev/null
 #PBS -l gres=atlas1%atlas2
-#PBS -l walltime=00:05:00
-#PBS -l nodes=512
+#PBS -l walltime=00:01:00
+#PBS -l nodes=256
 #this is to be called by DeepDSE/time_training_runs/time_training_runs.py
 # assume are running from an allocated node, not a titan-ext node.
 
@@ -14,7 +14,7 @@ d=/lustre/atlas/scratch/forresti/csc103/dnn_exploration/nets_nov2015_done/FireNe
 
 #pbs doesn't like stdin
 #d=$1
-n_gpu=512
+n_gpu=256
 
 CAFFE_ROOT=/ccs/home/forresti/FireCaffe_batchreduce
 CAFFE_BIN_COMPUTENODE=/lustre/atlas/scratch/forresti/csc103/dnn_exploration/bin

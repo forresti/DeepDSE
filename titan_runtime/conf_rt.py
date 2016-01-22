@@ -18,7 +18,7 @@ caffe_root = '/ccs/home/forresti/FireCaffe_batchreduce'
 caffe_bin_computenode = '/lustre/atlas/scratch/forresti/csc103/dnn_exploration/bin'
 caffe_lib_computenode = '/lustre/atlas/scratch/forresti/csc103/dnn_exploration/lib'
 #max_jobs = 1000
-max_jobs = 10
+max_jobs = 2
 
 walltime=2
 
